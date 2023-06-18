@@ -25,6 +25,7 @@ class RemotePeer {
       if (identityCoreKey && name) {
         this.name = name
         await this.setupCores(b4a.from(identityCoreKey, 'hex'))
+        connectionChannelPort.postMessage(`cores setup with ${name}`)
       }
     })
   }

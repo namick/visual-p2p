@@ -30,13 +30,15 @@ export async function connect() {
     store.replicate(connection)
     const remotePeer = new RemotePeer(connection, store)
     remotePeers.push(remotePeer)
+
+    // tell the remotePeer about this peer's identityCore
     connection.write(
       JSON.stringify({
         name,
         identityCoreKey: b4a.toString(identityCore.key, 'hex'),
       })
     )
-    connectionChannelPort.postMessage('got connection!')
+    connectionChannelPort.postMessage(`connection initiated`)
   })
 
   if (identityCore.length === 0) {

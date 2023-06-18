@@ -1,7 +1,7 @@
 import Corestore from 'corestore'
 import Hypercore from 'hypercore'
 import b4a from 'b4a'
-import { connectionChannelPort } from './messageChannels'
+import { appChannelPort, connectionChannelPort } from './messageChannels'
 
 type Connection = { on: (arg0: string, arg1: (data: any) => void) => void }
 
@@ -26,6 +26,7 @@ class RemotePeer {
         this.name = name
         await this.setupCores(b4a.from(identityCoreKey, 'hex'))
         connectionChannelPort.postMessage(`cores setup with ${name}`)
+        appChannelPort.postMessage({ type: 'peer', name })
       }
     })
   }

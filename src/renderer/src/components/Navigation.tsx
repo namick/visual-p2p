@@ -6,21 +6,14 @@ import ListItem from '@mui/joy/ListItem'
 import ListItemButton from '@mui/joy/ListItemButton'
 import ListItemDecorator from '@mui/joy/ListItemDecorator'
 import ListItemContent from '@mui/joy/ListItemContent'
-
-// Icons import
+import { screenState } from '../state'
 import FolderOpenIcon from '@mui/icons-material/FolderOpen'
 import ShareOutlinedIcon from '@mui/icons-material/ShareOutlined'
 import KeyboardArrowDownRoundedIcon from '@mui/icons-material/KeyboardArrowDownRounded'
+import { useSetRecoilState } from 'recoil'
 
-interface Props {
-  setScreen: (screen: string) => void
-}
-
-export default function Navigation({ setScreen }: Props) {
-  const handleNavClick = (screen: string) => {
-    console.log(screen)
-    setScreen(screen)
-  }
+export default function Navigation() {
+  const setScreen = useSetRecoilState(screenState)
 
   return (
     <List size="sm" sx={{ '--ListItem-radius': '8px', '--List-gap': '4px' }}>
@@ -43,7 +36,7 @@ export default function Navigation({ setScreen }: Props) {
           }}
         >
           <ListItem>
-            <ListItemButton onClick={() => handleNavClick('Chat')} variant="soft" color="primary">
+            <ListItemButton onClick={() => setScreen('Chat')} variant="soft" color="primary">
               <ListItemDecorator sx={{ color: 'inherit' }}>
                 <FolderOpenIcon fontSize="small" />
               </ListItemDecorator>
@@ -51,7 +44,7 @@ export default function Navigation({ setScreen }: Props) {
             </ListItemButton>
           </ListItem>
           <ListItem>
-            <ListItemButton onClick={() => handleNavClick('Peers')}>
+            <ListItemButton onClick={() => setScreen('Peers')}>
               <ListItemDecorator sx={{ color: 'neutral.500' }}>
                 <ShareOutlinedIcon fontSize="small" />
               </ListItemDecorator>

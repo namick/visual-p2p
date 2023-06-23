@@ -5,6 +5,7 @@ import b4a from 'b4a'
 import { createHash } from 'crypto'
 import { appChannelPort, connectionChannelPort, dataChannelPort } from './messageChannels'
 import RemotePeer from './RemotePeer'
+import RemotePeers from './RemotePeers'
 
 export const name = process.env.MAIN_VITE_NAME || 'test'
 const topic = process.env.MAIN_VITE_TOPIC || 'test-topic'
@@ -14,7 +15,7 @@ const topicBuffer = b4a.from(topicHex, 'hex')
 export async function connect() {
   dataChannelPort.postMessage({ name })
 
-  const remotePeers: RemotePeer[] = []
+  const remotePeers = new RemotePeers()
 
   const store = new Corestore(`./.storage/${name}`)
   const swarm = new Hyperswarm()
@@ -28,8 +29,8 @@ export async function connect() {
 
   swarm.on('connection', (connection) => {
     store.replicate(connection)
-    const remotePeer = new RemotePeer(connection, store)
-    remotePeers.push(remotePeer)
+    const remotePeer = new RemotePeer(connection, store, remotePeers)
+    remotePeers.add(remotePeer)
 
     // tell the remotePeer about this peer's identityCore
     connection.write(

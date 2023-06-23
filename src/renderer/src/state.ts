@@ -1,12 +1,6 @@
 import { atom } from 'recoil'
-
-let appChannelPort: MessagePort
-
-window.onmessage = (event: MessageEvent) => {
-  if (event.source === window && event.data === 'message-channel-ports') {
-    appChannelPort = event.ports[0]
-  }
-}
+import { syncEffect } from 'recoil-sync'
+import { array, object, string } from '@recoiljs/refine'
 
 export const messagesState = atom<string[]>({
   key: 'messagesState',
@@ -23,18 +17,14 @@ export const screenState = atom<'Chat' | 'Peers'>({
   default: 'Chat',
 })
 
-type Peer = Record<string, unknown>
-
-export const peersState = atom<Peer[]>({
-  key: 'peersState',
+export const remotePeersState = atom({
+  key: 'remotePeers',
   default: [],
   effects: [
-    ({ setSelf }) => {
-      appChannelPort.onmessage = (event: MessageEvent) => {
-        if (event.data.type === 'peer') {
-          setSelf((peers: Peer[]) => [...peers, event.data])
-        }
-      }
-    },
+    syncEffect({
+      itemKey: 'remotePeers',
+      storeKey: 'dataChannel',
+      refine: array(object({ name: string() })),
+    }),
   ],
 })

@@ -1,20 +1,23 @@
 import Corestore from 'corestore'
 import Hypercore from 'hypercore'
 import b4a from 'b4a'
-import { appChannelPort, connectionChannelPort } from './messageChannels'
+import RemotePeers from './RemotePeers'
+import { connectionChannelPort } from './messageChannels'
 
 type Connection = { on: (arg0: string, arg1: (data: any) => void) => void }
 
 class RemotePeer {
-  public name = ''
+  public name = 'unknown'
   public connection: Connection
   public store: Corestore
   public identityCore: Hypercore
   public messageCore: Hypercore
+  public remotePeers: RemotePeers
 
-  constructor(connection: Connection, store: Corestore) {
+  constructor(connection: Connection, store: Corestore, remotePeers: RemotePeers) {
     this.connection = connection
     this.store = store
+    this.remotePeers = remotePeers
 
     this.listen()
   }
@@ -25,8 +28,7 @@ class RemotePeer {
       if (identityCoreKey && name) {
         this.name = name
         await this.setupCores(b4a.from(identityCoreKey, 'hex'))
-        connectionChannelPort.postMessage(`cores setup with ${name}`)
-        appChannelPort.postMessage({ type: 'peer', name })
+        this.remotePeers.notifyRenderer()
       }
     })
   }

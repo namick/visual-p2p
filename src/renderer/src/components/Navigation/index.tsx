@@ -5,7 +5,7 @@ import ListItem from '@mui/joy/ListItem'
 import ListItemButton from '@mui/joy/ListItemButton'
 import ListItemDecorator from '@mui/joy/ListItemDecorator'
 import ListItemContent from '@mui/joy/ListItemContent'
-import { peersState, screenState } from '../../state'
+import { remotePeersState, screenState } from '../../state'
 import FolderOpenIcon from '@mui/icons-material/FolderOpen'
 import ShareOutlinedIcon from '@mui/icons-material/ShareOutlined'
 import KeyboardArrowDownRoundedIcon from '@mui/icons-material/KeyboardArrowDownRounded'
@@ -14,7 +14,7 @@ import { PeerListItem } from './PeerListItem'
 
 export default function Navigation() {
   const setScreen = useSetRecoilState(screenState)
-  const peers = useRecoilValue(peersState)
+  const remotePeers = useRecoilValue(remotePeersState)
 
   return (
     <List size="sm" sx={{ '--ListItem-radius': '8px', '--List-gap': '4px' }}>
@@ -55,7 +55,7 @@ export default function Navigation() {
         </List>
       </ListItem>
 
-      {peers.map((peer, i) => (
+      {remotePeers.map((peer, i) => (
         <PeerListItem peer={peer} key={i} />
       ))}
     </List>

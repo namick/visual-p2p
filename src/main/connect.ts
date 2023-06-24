@@ -13,7 +13,7 @@ const topicHex = createHash('sha256').update(topic).digest('hex')
 const topicBuffer = b4a.from(topicHex, 'hex')
 
 export async function connect() {
-  dataChannelPort.postMessage({ name })
+  dataChannelPort.postMessage({ key: 'localPeer', value: { name } })
 
   const remotePeers = new RemotePeers()
 
@@ -35,7 +35,7 @@ export async function connect() {
     // tell the remotePeer about this peer's identityCore
     connection.write(
       JSON.stringify({
-        name,
+        name: name,
         identityCoreKey: b4a.toString(identityCore.key, 'hex'),
       })
     )

@@ -17,12 +17,22 @@ export const screenState = atom<'Chat' | 'Peers'>({
   default: 'Chat',
 })
 
+export const localPeerState = atom({
+  key: 'localPeer',
+  default: { name: 'unknown' },
+  effects: [
+    syncEffect({
+      storeKey: 'dataChannel',
+      refine: object({ name: string() }),
+    }),
+  ],
+})
+
 export const remotePeersState = atom({
   key: 'remotePeers',
   default: [],
   effects: [
     syncEffect({
-      itemKey: 'remotePeers',
       storeKey: 'dataChannel',
       refine: array(object({ name: string() })),
     }),

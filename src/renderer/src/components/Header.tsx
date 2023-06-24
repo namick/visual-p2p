@@ -9,13 +9,14 @@ import MenuIcon from '@mui/icons-material/Menu'
 import BookRoundedIcon from '@mui/icons-material/BookRounded'
 import Menu from '../components/Menu'
 import Layout from '../components/Layout'
-import { useSetRecoilState } from 'recoil'
+import { useRecoilValue, useSetRecoilState } from 'recoil'
 import { ColorSchemeToggle } from '../components/ColorSchemeToggle'
-import { drawerOpenState, screenState } from '../state'
+import { localPeerState, drawerOpenState, screenState } from '../state'
 
 export function Header() {
   const setDrawerOpen = useSetRecoilState(drawerOpenState)
   const setScreen = useSetRecoilState(screenState)
+  const { name } = useRecoilValue(localPeerState)
 
   return (
     <Layout.Header>
@@ -39,7 +40,7 @@ export function Header() {
           <FindInPageRoundedIcon />
         </IconButton>
         <Typography component="h1" fontWeight="xl">
-          Files
+          {name}
         </Typography>
       </Box>
       <Input

@@ -14,11 +14,7 @@ class RemotePeers {
   }
 
   serialize() {
-    return this.peers.map((peer) => {
-      return {
-        name: peer.name,
-      }
-    })
+    return this.peers.map((peer) => peer.serialize())
   }
 }
 

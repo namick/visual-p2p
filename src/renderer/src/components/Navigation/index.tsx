@@ -56,7 +56,7 @@ export default function Navigation() {
       </ListItem>
 
       {remotePeers.map((peer, i) => (
-        <PeerListItem peer={peer} key={i} />
+        <PeerListItem name={peer.name} key={i} />
       ))}
     </List>
   )

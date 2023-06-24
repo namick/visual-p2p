@@ -7,17 +7,20 @@ import ListItemButton from '@mui/joy/ListItemButton'
 import ListItemDecorator from '@mui/joy/ListItemDecorator'
 import ListItemContent from '@mui/joy/ListItemContent'
 import KeyboardArrowDownRoundedIcon from '@mui/icons-material/KeyboardArrowDownRounded'
+import { selectedCoreState, selectedPeerState } from '../../state'
+import { useRecoilValue } from 'recoil'
 
 interface Props {
-  peer: {
-    name: string
-  }
+  name: string
 }
-export function PeerListItem({ peer }: Props) {
+export function PeerListItem({ name }: Props) {
+  const bgcolors = ['primary.300', 'danger.400', 'warning.500', 'success.400']
+  const peer = useRecoilValue(selectedPeerState(name))
+
   return (
     <ListItem nested sx={{ mt: 2 }}>
       <ListSubheader>
-        {peer.name}
+        {name}
         <IconButton
           size="sm"
           variant="plain"
@@ -27,74 +30,46 @@ export function PeerListItem({ peer }: Props) {
           <KeyboardArrowDownRoundedIcon fontSize="small" color="primary" />
         </IconButton>
       </ListSubheader>
-      <List
-        aria-labelledby="nav-list-tags"
-        size="sm"
-        sx={{
-          '--ListItemDecorator-size': '32px',
-        }}
-      >
-        <ListItem>
-          <ListItemButton>
-            <ListItemDecorator>
-              <Box
-                sx={{
-                  width: '10px',
-                  height: '10px',
-                  borderRadius: '99px',
-                  bgcolor: 'primary.300',
-                }}
-              />
-            </ListItemDecorator>
-            <ListItemContent>Personal</ListItemContent>
-          </ListItemButton>
-        </ListItem>
-        <ListItem>
-          <ListItemButton>
-            <ListItemDecorator>
-              <Box
-                sx={{
-                  width: '10px',
-                  height: '10px',
-                  borderRadius: '99px',
-                  bgcolor: 'danger.400',
-                }}
-              />
-            </ListItemDecorator>
-            <ListItemContent>Work</ListItemContent>
-          </ListItemButton>
-        </ListItem>
-        <ListItem>
-          <ListItemButton>
-            <ListItemDecorator>
-              <Box
-                sx={{
-                  width: '10px',
-                  height: '10px',
-                  borderRadius: '99px',
-                  bgcolor: 'warning.500',
-                }}
-              />
-            </ListItemDecorator>
-            <ListItemContent>Travels</ListItemContent>
-          </ListItemButton>
-        </ListItem>
-        <ListItem>
-          <ListItemButton>
-            <ListItemDecorator>
-              <Box
-                sx={{
-                  width: '10px',
-                  height: '10px',
-                  borderRadius: '99px',
-                  bgcolor: 'success.400',
-                }}
-              />
-            </ListItemDecorator>
-            <ListItemContent>Concert tickets</ListItemContent>
-          </ListItemButton>
-        </ListItem>
+      <List size="sm" sx={{ '--ListItemDecorator-size': '32px' }}>
+        {peer?.cores.map((core, i) => (
+          <PeerCoreItem
+            name={name}
+            coreKey={core.key}
+            bgcolor={bgcolors[i % bgcolors.length]}
+            key={i}
+          />
+        ))}
       </List>
+    </ListItem>
+  )
+}
+
+interface PeerCoreItemProps {
+  name: string
+  coreKey: string
+  bgcolor: string
+}
+
+function PeerCoreItem({ name, coreKey, bgcolor }: PeerCoreItemProps) {
+  const core = useRecoilValue(selectedCoreState({ name, coreKey }))
+
+  if (!core) return null
+
+  return (
+    <ListItem>
+      <ListItemButton>
+        <ListItemDecorator>
+          <Box
+            sx={{
+              width: '10px',
+              height: '10px',
+              borderRadius: '99px',
+              bgcolor,
+            }}
+          />
+        </ListItemDecorator>
+        <ListItemContent>{core.name}</ListItemContent>
+      </ListItemButton>
     </ListItem>
   )
 }

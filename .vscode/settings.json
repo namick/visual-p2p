@@ -8,6 +8,7 @@
   "[json]": {
     "editor.defaultFormatter": "esbenp.prettier-vscode"
   },
-  "cSpell.words": ["hyperdht", "keypair", "Unnannounce"],
-  "compile-hero.disable-compile-files-on-did-save-code": true
+  "cSpell.words": ["hyperdht", "keypair", "recoiljs", "Unnannounce"],
+  "compile-hero.disable-compile-files-on-did-save-code": true,
+  "typescript.tsdk": "node_modules/typescript/lib"
 }

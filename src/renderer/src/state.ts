@@ -1,6 +1,6 @@
-import { atom } from 'recoil'
+import { atom, selectorFamily } from 'recoil'
 import { syncEffect } from 'recoil-sync'
-import { array, object, string } from '@recoiljs/refine'
+import { array, bool, object, string } from '@recoiljs/refine'
 
 export const messagesState = atom<string[]>({
   key: 'messagesState',
@@ -34,7 +34,40 @@ export const remotePeersState = atom({
   effects: [
     syncEffect({
       storeKey: 'dataChannel',
-      refine: array(object({ name: string() })),
+      refine: array(
+        object({
+          name: string(),
+          cores: array(
+            object({
+              name: string(),
+              peer: string(),
+              key: string(),
+              writeable: bool(),
+              valueEncoding: string(),
+            })
+          ),
+        })
+      ),
     }),
   ],
+})
+
+export const selectedPeerState = selectorFamily({
+  key: 'selectedPeer',
+  get:
+    (name: string) =>
+    ({ get }) => {
+      const peers = get(remotePeersState)
+      return peers.find((peer) => peer.name === name)
+    },
+})
+
+export const selectedCoreState = selectorFamily({
+  key: 'selectedCore',
+  get:
+    (params: { name: string; coreKey: string }) =>
+    ({ get }) => {
+      const peer = get(selectedPeerState(params?.name))
+      return peer?.cores.find((core) => core.key === params?.coreKey)
+    },
 })

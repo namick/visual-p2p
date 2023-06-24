@@ -1,17 +1,17 @@
+import { Peer } from './types'
 import Corestore from 'corestore'
-import Hypercore from 'hypercore'
-import b4a from 'b4a'
 import RemotePeers from './RemotePeers'
 import { connectionChannelPort } from './messageChannels'
+import Core from './Core'
 
 type Connection = { on: (arg0: string, arg1: (data: any) => void) => void }
 
-class RemotePeer {
+class RemotePeer implements Peer {
   public name = 'unknown'
   public connection: Connection
   public store: Corestore
-  public identityCore: Hypercore
-  public messageCore: Hypercore
+  public identityCore?: Core
+  public messageCore?: Core
   public remotePeers: RemotePeers
 
   constructor(connection: Connection, store: Corestore, remotePeers: RemotePeers) {
@@ -27,7 +27,7 @@ class RemotePeer {
       const { name, identityCoreKey } = this.parseConnectionData(data)
       if (identityCoreKey && name) {
         this.name = name
-        await this.setupCores(b4a.from(identityCoreKey, 'hex'))
+        await this.setupCores(identityCoreKey)
         this.remotePeers.notifyRenderer()
       }
     })
@@ -42,25 +42,51 @@ class RemotePeer {
   }
 
   async setupCores(key: string) {
-    this.identityCore = this.store.get({
-      key: b4a.from(key, 'hex'),
+    this.identityCore = new Core({
+      name: 'identity-core',
+      key,
+      store: this.store,
+      peer: this,
       valueEncoding: 'json',
+      writeable: false,
     })
-    await this.identityCore.ready()
-    await this.identityCore.update()
-    const identity = await this.identityCore.get(0)
 
-    this.messageCore = this.store.get({
-      key: b4a.from(identity.messageCoreKey, 'hex'),
+    await this.identityCore.core.ready()
+    await this.identityCore.core.update()
+
+    const identity = await this.identityCore.core.get(0)
+
+    this.messageCore = new Core({
+      name: 'message-core',
+      store: this.store,
+      peer: this,
+      key: identity.messageCoreKey,
       valueEncoding: 'utf-8',
+      writeable: false,
     })
 
-    this.messageCore.on('append', () => {
-      const seq = this.messageCore.length - 1
-      this.messageCore.get(seq).then((block) => {
+    const { core } = this.messageCore
+
+    core.on('append', () => {
+      const seq = core.length - 1
+      core.get(seq).then((block) => {
         connectionChannelPort.postMessage(`${this.name}: ${block}`)
       })
     })
+  }
+
+  get cores() {
+    const list = new Array<Core>()
+    if (this.identityCore) list.push(this.identityCore)
+    if (this.messageCore) list.push(this.messageCore)
+    return list
+  }
+
+  serialize() {
+    return {
+      name: this.name,
+      cores: this.cores.map((core) => core.serialize()),
+    }
   }
 }
 

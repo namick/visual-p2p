@@ -22,7 +22,7 @@ export async function connect() {
   goodbye(() => swarm.destroy())
 
   const identityCore = store.get({ name: 'identity-core', valueEncoding: 'json' })
-  const messagesCore = store.get({ name: 'messages-core', valueEncoding: 'utf-8 ' })
+  const messagesCore = store.get({ name: 'messages-core', valueEncoding: 'utf-8' })
   await Promise.all([identityCore.ready(), messagesCore.ready()])
 
   swarm.join(topicBuffer)

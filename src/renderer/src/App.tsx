@@ -6,6 +6,7 @@ import Navigation from './components/Navigation'
 import { Peers } from './screens/Peers'
 import { Chat } from './screens/Chat'
 import { Header } from './components/Header'
+import { Core } from './screens/Core'
 
 export function App(): JSX.Element {
   const screen = useRecoilValue(screenState)
@@ -38,6 +39,7 @@ export function App(): JSX.Element {
         </Layout.SideNav>
         {screen === 'Peers' && <Peers />}
         {screen === 'Chat' && <Chat />}
+        {screen === 'Core' && <Core />}
       </Layout.Root>
     </>
   )

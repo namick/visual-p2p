@@ -1,6 +1,6 @@
-import { atom, selectorFamily } from 'recoil'
+import { atom, selector, selectorFamily } from 'recoil'
 import { syncEffect } from 'recoil-sync'
-import { array, bool, object, string } from '@recoiljs/refine'
+import { array, bool, number, object, string } from '@recoiljs/refine'
 
 export const messagesState = atom<string[]>({
   key: 'messagesState',
@@ -12,7 +12,7 @@ export const drawerOpenState = atom<boolean>({
   default: false,
 })
 
-export const screenState = atom<'Chat' | 'Peers'>({
+export const screenState = atom<'Chat' | 'Peers' | 'Core'>({
   key: 'screenState',
   default: 'Chat',
 })
@@ -44,6 +44,13 @@ export const remotePeersState = atom({
               key: string(),
               writeable: bool(),
               valueEncoding: string(),
+              blocks: array(
+                object({
+                  height: number(),
+                  data: string(),
+                  size: number(),
+                })
+              ),
             })
           ),
         })
@@ -70,4 +77,18 @@ export const selectedCoreState = selectorFamily({
       const peer = get(selectedPeerState(params?.name))
       return peer?.cores.find((core) => core.key === params?.coreKey)
     },
+})
+
+export const currentCoreKeyState = atom({
+  key: 'currentCoreKey',
+  default: '',
+})
+
+export const currentCoreState = selector({
+  key: 'currentCore',
+  get: ({ get }) => {
+    const coreKey = get(currentCoreKeyState)
+    const peers = get(remotePeersState)
+    return peers.flatMap((peer) => peer.cores).find((core) => core.key === coreKey)
+  },
 })

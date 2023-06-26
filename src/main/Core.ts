@@ -35,13 +35,34 @@ class Core {
     })
   }
 
-  serialize() {
+  async blockData() {
+    await this.core.ready()
+
+    const fullStream = this.core.createReadStream()
+    const blocks: { height: number; data: string; size: number }[] = []
+    let height = 0
+    for await (const block of fullStream) {
+      let data = block
+      if (this.valueEncoding === 'json') {
+        data = JSON.stringify(data)
+      }
+      blocks.push({ height, data, size: data.length })
+      height++
+    }
+
+    return blocks
+  }
+
+  async serialize() {
+    const blocks = await this.blockData()
+
     return {
       name: this.name,
       peer: this.peer.name,
       key: this.key,
       writeable: this.writeable,
       valueEncoding: this.valueEncoding,
+      blocks,
     }
   }
 }

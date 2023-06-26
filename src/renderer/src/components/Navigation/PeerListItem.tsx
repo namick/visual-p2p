@@ -7,8 +7,8 @@ import ListItemButton from '@mui/joy/ListItemButton'
 import ListItemDecorator from '@mui/joy/ListItemDecorator'
 import ListItemContent from '@mui/joy/ListItemContent'
 import KeyboardArrowDownRoundedIcon from '@mui/icons-material/KeyboardArrowDownRounded'
-import { selectedCoreState, selectedPeerState } from '../../state'
-import { useRecoilValue } from 'recoil'
+import { currentCoreKeyState, screenState, selectedCoreState, selectedPeerState } from '../../state'
+import { useRecoilState, useRecoilValue } from 'recoil'
 
 interface Props {
   name: string
@@ -52,12 +52,21 @@ interface PeerCoreItemProps {
 
 function PeerCoreItem({ name, coreKey, bgcolor }: PeerCoreItemProps) {
   const core = useRecoilValue(selectedCoreState({ name, coreKey }))
+  const [screen, setScreen] = useRecoilState(screenState)
+  const [currentCoreKey, setCurrentCoreKey] = useRecoilState(currentCoreKeyState)
 
   if (!core) return null
 
+  const handleClick = () => {
+    setScreen('Core')
+    setCurrentCoreKey(coreKey)
+  }
+
+  const isSelected = screen === 'Core' && currentCoreKey === coreKey
+
   return (
     <ListItem>
-      <ListItemButton>
+      <ListItemButton onClick={handleClick} selected={isSelected}>
         <ListItemDecorator>
           <Box
             sx={{

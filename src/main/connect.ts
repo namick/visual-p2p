@@ -27,10 +27,11 @@ export async function connect() {
 
   swarm.join(topicBuffer)
 
-  swarm.on('connection', (connection) => {
+  swarm.on('connection', async (connection) => {
     store.replicate(connection)
     const remotePeer = new RemotePeer(connection, store, remotePeers)
-    remotePeers.add(remotePeer)
+
+    await remotePeers.add(remotePeer)
 
     // tell the remotePeer about this peer's identityCore
     connection.write(

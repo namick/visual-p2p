@@ -36,6 +36,7 @@
     "hyperbee": "^2.13.0",
     "hypercore": "^10.15.1",
     "hyperswarm": "^4.5.0",
+    "react-json-view": "^1.21.3",
     "recoil": "^0.7.7",
     "recoil-sync": "^0.2.0"
   },

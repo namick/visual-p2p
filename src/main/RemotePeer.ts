@@ -82,10 +82,12 @@ class RemotePeer implements Peer {
     return list
   }
 
-  serialize() {
+  async serialize() {
+    const cores = await Promise.all(this.cores.map((core) => core.serialize()))
+
     return {
       name: this.name,
-      cores: this.cores.map((core) => core.serialize()),
+      cores,
     }
   }
 }

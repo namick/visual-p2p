@@ -4,17 +4,20 @@ import { dataChannelPort } from './messageChannels'
 class RemotePeers {
   public peers: RemotePeer[] = []
 
-  add(remotePeer: RemotePeer) {
+  async add(remotePeer: RemotePeer) {
     this.peers.push(remotePeer)
-    this.notifyRenderer()
+
+    await this.notifyRenderer()
   }
 
-  notifyRenderer() {
-    dataChannelPort.postMessage({ key: 'remotePeers', value: this.serialize() })
+  async notifyRenderer() {
+    const value = await this.serialize()
+
+    dataChannelPort.postMessage({ key: 'remotePeers', value })
   }
 
-  serialize() {
-    return this.peers.map((peer) => peer.serialize())
+  async serialize() {
+    return Promise.all(this.peers.map((peer) => peer.serialize()))
   }
 }
 
